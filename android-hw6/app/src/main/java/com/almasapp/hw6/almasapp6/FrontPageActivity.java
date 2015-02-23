@@ -8,7 +8,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 
-public class FrontPageActivity extends ActionBarActivity {
+public class FrontPageActivity extends ActionBarActivity implements FragmentFrontPage.OnButtonClickedListener {
 
     ActionBar actionBar;
 
@@ -18,8 +18,13 @@ public class FrontPageActivity extends ActionBarActivity {
         setContentView(R.layout.activity_front_page);
 
         actionBar = getSupportActionBar();
-    }
 
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, new FragmentFrontPage())
+                    .commit();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -47,5 +52,22 @@ public class FrontPageActivity extends ActionBarActivity {
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onButtonClicked(int id) {
+        switch (id) {
+            case R.id.buttonFrontAboutMe:
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, new FragmentAboutMe())
+                        .addToBackStack(null)
+                        .commit();
+                break;
+            case R.id.buttonFrontViewPager:
+                break;
+            case R.id.buttonFrontRecyclerView:
+                break;
+
+        }
     }
 }
