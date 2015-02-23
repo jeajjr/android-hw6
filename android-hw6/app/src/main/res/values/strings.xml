@@ -4,5 +4,9 @@
     <string name="app_name">AlmasApp6</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="action_movies">Movies</string>
+    <string name="action_overflow">Overflow item</string>
+    <string name="front_page_action_always">The always shown action item was touched.</string>
+    <string name="front_page_action_overflow">The action item on the overflow area was touched.</string>
 
 </resources>
