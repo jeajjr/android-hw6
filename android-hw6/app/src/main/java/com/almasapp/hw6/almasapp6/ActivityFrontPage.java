@@ -1,5 +1,6 @@
 package com.almasapp.hw6.almasapp6;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -8,7 +9,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 
-public class FrontPageActivity extends ActionBarActivity implements FragmentFrontPage.OnButtonClickedListener {
+public class ActivityFrontPage extends ActionBarActivity implements FragmentFrontPage.OnButtonClickedListener {
 
     ActionBar actionBar;
 
@@ -50,7 +51,6 @@ public class FrontPageActivity extends ActionBarActivity implements FragmentFron
                 return true;
         }
 
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -64,6 +64,7 @@ public class FrontPageActivity extends ActionBarActivity implements FragmentFron
                         .commit();
                 break;
             case R.id.buttonFrontViewPager:
+                startActivity(new Intent(this, ActivityRecyclerView.class));
                 break;
             case R.id.buttonFrontRecyclerView:
                 break;

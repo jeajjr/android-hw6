@@ -16,5 +16,6 @@
     <string name="front_page_action_always">The always shown action item was touched.</string>
     <string name="front_page_action_overflow">The action item on the overflow area was touched.</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_activity_recycler_view">ActivityRecyclerView</string>
 
 </resources>
