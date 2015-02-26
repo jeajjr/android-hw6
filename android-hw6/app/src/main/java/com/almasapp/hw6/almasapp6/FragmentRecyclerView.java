@@ -5,11 +5,54 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 public class FragmentRecyclerView extends Fragment {
+    static String TAG = "FragmentRecyclerView";
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        Log.d(TAG, "onCreateOptionsMenu");
+
+        if (menu.findItem(R.id.action_search) == null) {
+            inflater.inflate(R.menu.menu_fragment_recycler_view, menu);
+            Log.d(TAG, "inflating menu");
+        }
+        else
+            Log.d(TAG, "inflating not necessary");
+
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+
+        if (searchView != null) {
+            Log.d(TAG, "setting OnQueryTextListener");
+
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query){
+                    Log.d(TAG, "onQueryTextSubmit");
+                    return true;
+                }
+                @Override
+                public boolean onQueryTextChange(String query){
+                    Log.d(TAG, "onQueryTextChange");
+                    return true;
+                }
+            });
+        }
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
 
     MovieData movieData;
     private OnItemClickedListener mListener;
@@ -41,6 +84,8 @@ public class FragmentRecyclerView extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_recycler_view, container, false);
+
+        setHasOptionsMenu(true);
 
         RecyclerView moviesRecyclerView = (RecyclerView) rootView.findViewById(R.id.cardList);
         moviesRecyclerView.setHasFixedSize(true);
