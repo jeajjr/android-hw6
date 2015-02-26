@@ -4,7 +4,7 @@
 
 
     <item android:id="@+id/action_always_shown"
-        android:title="@string/action_movies"
+        android:icon="@drawable/android"
         android:orderInCategory="95"
         app:showAsAction="always" />
 
