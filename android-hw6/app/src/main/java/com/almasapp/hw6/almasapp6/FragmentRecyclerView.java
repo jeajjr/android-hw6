@@ -148,53 +148,6 @@ public class FragmentRecyclerView extends Fragment {
             case LAYOUT_LINEAR:
                 moviesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                 myRecyclerViewAdapter = new MyRecyclerViewAdapter(getActivity(), movieList, LAYOUT_LINEAR);
-
-                myRecyclerViewAdapter.setOnMovieMenuClickListener(new MyRecyclerViewAdapter.OnMovieMenuClickListener() {
-                    @Override
-                    public void onItemClick(View view, final int position) {
-                        Log.d(TAG, "movie menu clicked");
-
-                        PopupMenu popupMenu = new PopupMenu(getActivity(), view);
-                        MenuInflater inflater = popupMenu.getMenuInflater();
-                        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                switch (item.getItemId()) {
-                                    case R.id.item_delete:
-                                        movieList.remove(position);
-                                        myRecyclerViewAdapter.notifyItemRemoved(position);
-                                        break;
-
-                                    case R.id.item_duplicate:
-                                        movieList.add(position + 1, (HashMap) ((HashMap) movieList.get(position)).clone());
-                                        myRecyclerViewAdapter.notifyItemInserted(position + 1);
-                                        break;
-                                }
-                                return false;
-                            }
-                        });
-                        inflater.inflate(R.menu.contextual_or_popup_menu, popupMenu.getMenu());
-                        popupMenu.show();
-                    }
-                });
-
-                myRecyclerViewAdapter.setOnItemClickListener(new MyRecyclerViewAdapter.OnItemClickListener(){
-
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        Log.d(TAG, "list item clicked");
-
-                        mListener.onItemClick(position);
-                    }
-
-                    @Override
-                    public void onItemLongClick(View view, int position) {
-                        Log.d(TAG, "list item long clicked");
-
-                        actionBarCallBack = new ActionBarCallBack(position);
-                        getActivity().startActionMode(actionBarCallBack);
-                    }
-                });
                 break;
 
             case LAYOUT_GRID:
@@ -207,6 +160,24 @@ public class FragmentRecyclerView extends Fragment {
                 myRecyclerViewAdapter = new MyRecyclerViewAdapter(getActivity(), movieList, LAYOUT_STAGGERED_GRID);
                 break;
         }
+
+        myRecyclerViewAdapter.setOnItemClickListener(new MyRecyclerViewAdapter.OnItemClickListener(){
+
+            @Override
+            public void onItemClick(View view, int position) {
+                Log.d(TAG, "list item clicked");
+
+                mListener.onItemClick(position);
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+                Log.d(TAG, "list item long clicked");
+
+                actionBarCallBack = new ActionBarCallBack(position);
+                getActivity().startActionMode(actionBarCallBack);
+            }
+        });
 
         moviesRecyclerView.setAdapter(myRecyclerViewAdapter);
 

@@ -95,6 +95,8 @@ public class FragmentMovieDetail extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        Log.d(TAG, "onCreateView");
+
         setHasOptionsMenu(true);
 
         final View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);

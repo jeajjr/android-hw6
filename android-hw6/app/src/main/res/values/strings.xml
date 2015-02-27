@@ -23,5 +23,6 @@
     <string name="clicks_first">This was clicked</string>
     <string name="clicks_second">times</string>
     <string name="title_activity_activity_view_pager">ActivityViewPager</string>
+    <string name="title_activity_activity_movie_detail">ActivityMovieDetail</string>
 
 </resources>

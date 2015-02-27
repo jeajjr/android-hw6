@@ -24,6 +24,10 @@
             android:name=".ActivityViewPager"
             android:label="@string/title_activity_activity_view_pager" >
         </activity>
+        <activity
+            android:name=".ActivityMovieDetail"
+            android:label="@string/title_activity_activity_movie_detail" >
+        </activity>
     </application>
 
 </manifest>

@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/item_duplicate"
-        android:icon="@drawable/abc_ic_menu_copy_mtrl_am_alpha"
+        android:icon="@drawable/copy"
         app:showAsAction="ifRoom|withText"
         android:title="Duplicate"
         android:titleCondensed="Delete" />

@@ -1,10 +1,9 @@
 package com.almasapp.hw6.almasapp6;
 
+import android.content.Intent;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -40,12 +39,11 @@ public class ActivityViewPager extends ActionBarActivity implements FragmentRecy
         });
     }
 
-
     @Override
     public void onItemClick(int position) {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, FragmentMovieDetail.newInstance((HashMap<String,?>) movieList.get(position)))
-                .addToBackStack(null)
-                .commit();
+        Intent i = new Intent(this, ActivityMovieDetail.class);
+        i.putExtra("movie", movieList);
+        i.putExtra("position", position);
+        startActivity(i);
     }
 }
