@@ -13,9 +13,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import java.util.List;
+import java.util.Map;
 
 public class FragmentRecyclerView extends Fragment {
     static String TAG = "FragmentRecyclerView";
+
+    private MovieData movieData;
+    private List<Map<String, ?>> movieList;
+    private MyRecyclerViewAdapter myRecyclerViewAdapter;
+    private RecyclerView moviesRecyclerView;
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -37,6 +46,16 @@ public class FragmentRecyclerView extends Fragment {
                 @Override
                 public boolean onQueryTextSubmit(String query){
                     Log.d(TAG, "onQueryTextSubmit");
+
+                    int position = findInMovies(query);
+
+                    Log.d(TAG, "position " + position);
+
+                    if (position != -1)
+                        moviesRecyclerView.scrollToPosition(position);
+                    else
+                        Toast.makeText(getActivity(), getResources().getString(R.string.recycler_view_not_found), Toast.LENGTH_SHORT).show();
+
                     return true;
                 }
                 @Override
@@ -54,7 +73,14 @@ public class FragmentRecyclerView extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    MovieData movieData;
+    private int findInMovies (String search) {
+        for (int index = 0; index < movieList.size(); index++)
+            if (((String) movieList.get(index).get("name")).toLowerCase().contains(search.toLowerCase()))
+                return index;
+
+        return -1;
+    }
+
     private OnItemClickedListener mListener;
 
     public interface OnItemClickedListener {
@@ -87,12 +113,14 @@ public class FragmentRecyclerView extends Fragment {
 
         setHasOptionsMenu(true);
 
-        RecyclerView moviesRecyclerView = (RecyclerView) rootView.findViewById(R.id.cardList);
+        moviesRecyclerView = (RecyclerView) rootView.findViewById(R.id.cardList);
         moviesRecyclerView.setHasFixedSize(true);
         moviesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        movieList = movieData.getMoviesList();
+
         //set adapter
-        final MyRecyclerViewAdapter myRecyclerViewAdapter = new MyRecyclerViewAdapter(getActivity(), movieData.getMoviesList());
+        myRecyclerViewAdapter = new MyRecyclerViewAdapter(getActivity(), movieList);
 
         myRecyclerViewAdapter.SetOnItemClickListener(new MyRecyclerViewAdapter.OnItemClickListener(){
             @Override
