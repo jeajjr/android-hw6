@@ -3,9 +3,11 @@ package com.almasapp.hw6.almasapp6;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,7 +24,13 @@ import java.util.Map;
 public class FragmentRecyclerView extends Fragment {
     static String TAG = "FragmentRecyclerView";
     static String ARG_MOVIE_LIST = "movie_list";
+    static String ARG_LAYOUT = "layout";
 
+    public static final int LAYOUT_LINEAR = 0;
+    public static final int LAYOUT_GRID = 1;
+    public static final int LAYOUT_STAGGERED_GRID = 2;
+
+    private int layout;
     private ArrayList<Map<String, ?>> movieList;
     private MyRecyclerViewAdapter myRecyclerViewAdapter;
     private RecyclerView moviesRecyclerView;
@@ -36,11 +44,12 @@ public class FragmentRecyclerView extends Fragment {
     public FragmentRecyclerView() {
     }
 
-    public static FragmentRecyclerView newInstance(ArrayList<Map<String, ?>> movieList) {
+    public static FragmentRecyclerView newInstance(ArrayList<Map<String, ?>> movieList, int layout) {
         FragmentRecyclerView fragment = new FragmentRecyclerView();
 
         Bundle args = new Bundle();
         args.putSerializable(ARG_MOVIE_LIST, movieList);
+        args.putInt(ARG_LAYOUT, layout);
         fragment.setArguments(args);
 
         return fragment;
@@ -105,8 +114,10 @@ public class FragmentRecyclerView extends Fragment {
         setRetainInstance(true);
 
         Bundle bundle = this.getArguments();
-        if (bundle != null)
+        if (bundle != null) {
             movieList = (ArrayList<Map<String, ?>>) bundle.get(ARG_MOVIE_LIST);
+            layout = bundle.getInt(ARG_LAYOUT);
+        }
     }
 
     @Override
@@ -128,23 +139,43 @@ public class FragmentRecyclerView extends Fragment {
 
         moviesRecyclerView = (RecyclerView) rootView.findViewById(R.id.cardList);
         moviesRecyclerView.setHasFixedSize(true);
-        moviesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        //set adapter
-        myRecyclerViewAdapter = new MyRecyclerViewAdapter(getActivity(), movieList);
+        switch (layout) {
+            case LAYOUT_LINEAR:
+                moviesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                myRecyclerViewAdapter = new MyRecyclerViewAdapter(getActivity(), movieList, LAYOUT_LINEAR);
 
-        myRecyclerViewAdapter.SetOnItemClickListener(new MyRecyclerViewAdapter.OnItemClickListener(){
-            @Override
-            public void onItemClick(View view, int position) {
-                mListener.onItemClick(position);
-            }
+                myRecyclerViewAdapter.setOnMovieMenuClickListener(new MyRecyclerViewAdapter.OnMovieMenuClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        Log.d(TAG, "movie menu clicked");
+                    }
+                });
 
-            @Override
-            public void onItemLongClick(View view, int position) {
+                myRecyclerViewAdapter.setOnItemClickListener(new MyRecyclerViewAdapter.OnItemClickListener(){
 
-            }
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        Log.d(TAG, "list item clicked");
+                    }
 
-        });
+                    @Override
+                    public void onItemLongClick(View view, int position) {
+                        Log.d(TAG, "list item long clicked");
+                    }
+                });
+                break;
+
+            case LAYOUT_GRID:
+                moviesRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+                myRecyclerViewAdapter = new MyRecyclerViewAdapter(getActivity(), movieList, LAYOUT_GRID);
+                break;
+
+            case LAYOUT_STAGGERED_GRID:
+                moviesRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+                myRecyclerViewAdapter = new MyRecyclerViewAdapter(getActivity(), movieList, LAYOUT_STAGGERED_GRID);
+                break;
+        }
 
         moviesRecyclerView.setAdapter(myRecyclerViewAdapter);
 

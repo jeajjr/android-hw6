@@ -21,7 +21,7 @@ public class ActivityRecyclerView extends ActionBarActivity implements FragmentR
             movieList = (new MovieData()).getMoviesList();
 
             getSupportFragmentManager().beginTransaction()
-                .add(R.id.container, FragmentRecyclerView.newInstance(movieList))
+                .add(R.id.container, FragmentRecyclerView.newInstance(movieList, FragmentRecyclerView.LAYOUT_LINEAR))
                 .commit();
         }
 
@@ -42,7 +42,6 @@ public class ActivityRecyclerView extends ActionBarActivity implements FragmentR
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         switch (id) {
             case android.R.id.home:
                 super.onBackPressed();

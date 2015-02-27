@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -19,31 +20,63 @@ import java.util.Map;
  * Created by José Ernesto on 12/02/2015.
  */
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder> {
+    private static String TAG = "MyRecyclerViewAdapter";
 
     private List<Map<String, ?>> mDataSet;
     private Context context;
+    private int layout;
+    OnMovieMenuClickListener onMovieMenuClickListener;
     OnItemClickListener onItemClickListener;
-    //OnCheckBoxClickListener onCheckBoxClickListener;
 
-    public MyRecyclerViewAdapter(Context context, List<Map<String, ?>> mDataSet) {
+    public MyRecyclerViewAdapter(Context context, List<Map<String, ?>> mDataSet, int layout) {
         this.mDataSet = mDataSet;
         this.context = context;
+
+        if (!(layout == FragmentRecyclerView.LAYOUT_LINEAR ||
+                layout == FragmentRecyclerView.LAYOUT_GRID ||
+                layout == FragmentRecyclerView.LAYOUT_STAGGERED_GRID ))
+            throw new IllegalArgumentException("Layout selected not valid");
+
+        this.layout = layout;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView vIcon;
         public TextView vTitle;
         public TextView vDescription;
-        public CheckBox vCheckBox;
+        public ImageButton menuButton;
         public RatingBar ratingBar;
 
         public ViewHolder(View v) {
             super(v);
-            vIcon = (ImageView) v.findViewById(R.id.imageViewMoviesImage);
-            vTitle = (TextView) v.findViewById(R.id.textViewMoviesTitle);
-            vDescription = (TextView) v.findViewById(R.id.textViewMoviesDescription);
-            //vCheckBox = (CheckBox) v.findViewById(R.id.checkBoxMovies);
-            ratingBar = (RatingBar) v.findViewById(R.id.ratingBarMovie);
+            switch (layout) {
+                case FragmentRecyclerView.LAYOUT_LINEAR:
+                    vIcon = (ImageView) v.findViewById(R.id.imageViewMoviesImage);
+                    vTitle = (TextView) v.findViewById(R.id.textViewMoviesTitle);
+                    vDescription = (TextView) v.findViewById(R.id.textViewMoviesDescription);
+                    menuButton = (ImageButton) v.findViewById(R.id.imageButtonViewMovieMenu);
+                    ratingBar = (RatingBar) v.findViewById(R.id.ratingBarMovie);
+
+                    menuButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (onMovieMenuClickListener != null) {
+                                onMovieMenuClickListener.onItemClick(v, getPosition());
+                            }
+                        }
+                    });
+                    break;
+
+                case FragmentRecyclerView.LAYOUT_GRID:
+                    vIcon = (ImageView) v.findViewById(R.id.imageViewMoviesImage);
+                    break;
+
+                case FragmentRecyclerView.LAYOUT_STAGGERED_GRID:
+                    vIcon = (ImageView) v.findViewById(R.id.imageViewMoviesImage);
+                    vTitle = (TextView) v.findViewById(R.id.textViewMoviesTitle);
+                    vDescription = (TextView) v.findViewById(R.id.textViewMoviesDescription);
+                    break;
+            }
 
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -63,25 +96,40 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
                     return true;
                 }
             });
-/*
-            vCheckBox.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v) {
-                    if (onCheckBoxClickListener != null) {
-                        onCheckBoxClickListener.onCheckBoxClick(v, getPosition());
-                    }
-                }
-            });
-            */
         }
 
         public void bindMovieData (Map<String, ?> movie) {
-            vTitle.setText((String) movie.get("name"));
-            vDescription.setText((String) movie.get("description"));
-            vIcon.setImageResource((Integer) movie.get("image"));
-            //vCheckBox.setChecked((Boolean) movie.get("selected"));
-            ratingBar.setRating((int) Double.parseDouble(movie.get("rating").toString()) + 1);
+            switch (layout) {
+                case FragmentRecyclerView.LAYOUT_LINEAR:
+                    vIcon.setImageResource((Integer) movie.get("image"));
+                    vTitle.setText((String) movie.get("name"));
+                    vDescription.setText((String) movie.get("description"));
+                    ratingBar.setRating((int) Double.parseDouble(movie.get("rating").toString()) + 1);
+                    break;
+
+                case FragmentRecyclerView.LAYOUT_GRID:
+                    vIcon.setImageResource((Integer) movie.get("image"));
+                    break;
+
+                case FragmentRecyclerView.LAYOUT_STAGGERED_GRID:
+                    vIcon.setImageResource((Integer) movie.get("image"));
+                    vTitle.setText((String) movie.get("name"));
+                    vDescription.setText((String) movie.get("description"));
+            }
         }
+    }
+
+    /**
+     * OnMovieMenuClickListener interface for clicks on movie menu.
+     * This design pattern allows the listener actions to be defined
+     * outside the adapter.
+     */
+    public interface OnMovieMenuClickListener {
+        public void onItemClick(View view, int position);
+    }
+
+    public void setOnMovieMenuClickListener(final OnMovieMenuClickListener mItemClickListener) {
+        this.onMovieMenuClickListener = mItemClickListener;
     }
 
     /**
@@ -94,27 +142,30 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         public void onItemLongClick(View view, int position);
     }
 
-    public void SetOnItemClickListener(final OnItemClickListener mItemClickListener) {
+    public void setOnItemClickListener(final OnItemClickListener mItemClickListener) {
         this.onItemClickListener = mItemClickListener;
     }
 
-    /**
-     * OnCheckBoxClickListener interface for clicks on the item's CheckKBox.
-     */
-    /*
-    public interface OnCheckBoxClickListener {
-        public void onCheckBoxClick(View view, int position);
-    }
-    public void setOnCheckBoxClickListener(final OnCheckBoxClickListener onCheckBoxClickListener) {
-        this.onCheckBoxClickListener = onCheckBoxClickListener;
-    }
-*/
     @Override
     public MyRecyclerViewAdapter.ViewHolder onCreateViewHolder (ViewGroup parent, int viewType) {
-        View v;
+        View v = null;
 
-        v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.movie_row, parent, false);
+        switch (layout) {
+            case FragmentRecyclerView.LAYOUT_LINEAR:
+                v = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.movie_row_linear, parent, false);
+                break;
+
+            case FragmentRecyclerView.LAYOUT_GRID:
+                v = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.movie_row_grid, parent, false);
+                break;
+
+            case FragmentRecyclerView.LAYOUT_STAGGERED_GRID:
+                v = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.movie_row_stagg_grid, parent, false);
+                break;
+        }
 
         Animation animation = AnimationUtils.loadAnimation(context, R.anim.abc_fade_in);
         animation.setDuration(1000);
