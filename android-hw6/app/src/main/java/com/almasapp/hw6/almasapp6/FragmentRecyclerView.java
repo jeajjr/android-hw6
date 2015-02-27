@@ -15,16 +15,36 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class FragmentRecyclerView extends Fragment {
     static String TAG = "FragmentRecyclerView";
+    static String ARG_MOVIE_LIST = "movie_list";
 
-    private MovieData movieData;
-    private List<Map<String, ?>> movieList;
+    private ArrayList<Map<String, ?>> movieList;
     private MyRecyclerViewAdapter myRecyclerViewAdapter;
     private RecyclerView moviesRecyclerView;
+
+    private OnItemClickedListener mListener;
+
+    public interface OnItemClickedListener {
+        public void onItemClick(int position);
+    }
+
+    public FragmentRecyclerView() {
+    }
+
+    public static FragmentRecyclerView newInstance(ArrayList<Map<String, ?>> movieList) {
+        FragmentRecyclerView fragment = new FragmentRecyclerView();
+
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_MOVIE_LIST, movieList);
+        fragment.setArguments(args);
+
+        return fragment;
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -48,8 +68,6 @@ public class FragmentRecyclerView extends Fragment {
                     Log.d(TAG, "onQueryTextSubmit");
 
                     int position = findInMovies(query);
-
-                    Log.d(TAG, "position " + position);
 
                     if (position != -1)
                         moviesRecyclerView.scrollToPosition(position);
@@ -81,22 +99,17 @@ public class FragmentRecyclerView extends Fragment {
         return -1;
     }
 
-    private OnItemClickedListener mListener;
-
-    public interface OnItemClickedListener {
-        public void onItemClick(int position);
-    }
-
-    public FragmentRecyclerView() {
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        movieData = new MovieData();
+
+        Bundle bundle = this.getArguments();
+        if (bundle != null)
+            movieList = (ArrayList<Map<String, ?>>) bundle.get(ARG_MOVIE_LIST);
     }
 
+    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
@@ -116,8 +129,6 @@ public class FragmentRecyclerView extends Fragment {
         moviesRecyclerView = (RecyclerView) rootView.findViewById(R.id.cardList);
         moviesRecyclerView.setHasFixedSize(true);
         moviesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        movieList = movieData.getMoviesList();
 
         //set adapter
         myRecyclerViewAdapter = new MyRecyclerViewAdapter(getActivity(), movieList);

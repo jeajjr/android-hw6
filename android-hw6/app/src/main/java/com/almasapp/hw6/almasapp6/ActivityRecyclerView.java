@@ -5,8 +5,14 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 public class ActivityRecyclerView extends ActionBarActivity implements FragmentRecyclerView.OnItemClickedListener {
+    private ArrayList<Map<String, ?>> movieList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -14,12 +20,13 @@ public class ActivityRecyclerView extends ActionBarActivity implements FragmentR
         setContentView(R.layout.activity_recycler_view);
 
         if (savedInstanceState == null) {
+            movieList = (new MovieData()).getMoviesList();
+
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new FragmentRecyclerView())
-                    .commit();
+                .add(R.id.container, FragmentRecyclerView.newInstance(movieList))
+                .commit();
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -45,6 +52,8 @@ public class ActivityRecyclerView extends ActionBarActivity implements FragmentR
 
     @Override
     public void onItemClick(int position) {
-
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, FragmentMovieDetail.newInstance((HashMap<String,?>) movieList.get(position)))
+                .commit();
     }
 }

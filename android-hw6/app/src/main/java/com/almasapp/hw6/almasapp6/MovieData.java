@@ -2,14 +2,13 @@ package com.almasapp.hw6.almasapp6;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MovieData {
 
-    List<Map<String,?>> moviesList;
+    ArrayList<Map<String,?>> moviesList;
 
-    public List<Map<String, ?>> getMoviesList() {
+    public ArrayList<Map<String, ?>> getMoviesList() {
         return moviesList;
     }
 
