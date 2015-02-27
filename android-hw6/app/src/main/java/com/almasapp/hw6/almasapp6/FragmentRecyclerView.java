@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -157,11 +158,15 @@ public class FragmentRecyclerView extends Fragment {
                     @Override
                     public void onItemClick(View view, int position) {
                         Log.d(TAG, "list item clicked");
+
+                        mListener.onItemClick(position);
                     }
 
                     @Override
                     public void onItemLongClick(View view, int position) {
                         Log.d(TAG, "list item long clicked");
+
+                        getActivity().startActionMode(new ActionBarCallBack(position));
                     }
                 });
                 break;
@@ -180,5 +185,52 @@ public class FragmentRecyclerView extends Fragment {
         moviesRecyclerView.setAdapter(myRecyclerViewAdapter);
 
         return rootView;
+    }
+
+    public class ActionBarCallBack implements ActionMode.Callback {
+        int position;
+
+        public ActionBarCallBack(int position) {
+            this.position = position;
+        }
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mode.getMenuInflater().inflate(R.menu.contextual_or_popup_menu, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            HashMap hm = (HashMap) movieList.get(position);
+            mode.setTitle((String) hm.get("name"));
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            int id = item.getItemId();
+
+            switch (id) {
+                case R.id.item_delete:
+                    movieList.remove(position);
+                    myRecyclerViewAdapter.notifyItemRemoved(position);
+                    mode.finish();
+                    break;
+
+                case R.id.item_duplicate:
+                    movieList.add(position+1, (HashMap) ((HashMap) movieList.get(position)).clone());
+                    myRecyclerViewAdapter.notifyItemInserted(position+1);
+                    mode.finish();
+                    break;
+                default:
+                    break;
+            }
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+
+        }
     }
 }

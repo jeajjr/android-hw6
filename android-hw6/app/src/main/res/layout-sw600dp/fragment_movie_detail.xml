@@ -54,6 +54,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:text="Description"
+        android:textIsSelectable="true"
         android:id="@+id/textViewMovieDetailDescription"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_marginRight="5dp"

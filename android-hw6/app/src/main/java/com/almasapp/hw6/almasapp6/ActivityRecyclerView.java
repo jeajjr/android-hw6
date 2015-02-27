@@ -25,7 +25,7 @@ public class ActivityRecyclerView extends ActionBarActivity implements FragmentR
                 .commit();
         }
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(false);
     }
 
     @Override
@@ -42,12 +42,6 @@ public class ActivityRecyclerView extends ActionBarActivity implements FragmentR
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        switch (id) {
-            case android.R.id.home:
-                super.onBackPressed();
-                return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -57,7 +51,5 @@ public class ActivityRecyclerView extends ActionBarActivity implements FragmentR
                 .replace(R.id.container, FragmentMovieDetail.newInstance((HashMap<String,?>) movieList.get(position)))
                 .addToBackStack(null)
                 .commit();
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 }
