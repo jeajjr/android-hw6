@@ -54,6 +54,7 @@ public class ActivityRecyclerView extends ActionBarActivity implements FragmentR
     public void onItemClick(int position) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, FragmentMovieDetail.newInstance((HashMap<String,?>) movieList.get(position)))
+                .addToBackStack(null)
                 .commit();
     }
 }

@@ -1,9 +1,15 @@
 package com.almasapp.hw6.almasapp6;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -19,6 +25,8 @@ public class FragmentMovieDetail extends Fragment {
     static String ARG_COUNTER = "counter";
 
     int counter;
+
+    private HashMap<String, ?> movie;
 
     public FragmentMovieDetail() {
         // Required empty public constructor
@@ -55,12 +63,43 @@ public class FragmentMovieDetail extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_fragment_movie_detail, menu);
+
+        MenuItem shareItem = menu.findItem(R.id.movie_detail_share);
+        ShareActionProvider actionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+
+        Intent intentShare = new Intent(Intent.ACTION_SEND);
+        intentShare.setType("text/plain");
+        intentShare.putExtra(Intent.EXTRA_TEXT, (String) movie.get("name"));
+        actionProvider.setShareIntent(intentShare);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.movie_detail_share:
+
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        setHasOptionsMenu(true);
+
         final View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
 
-        HashMap<String, ?> movie = (HashMap<String, ?>) getArguments().get(ARG_SECTION_NUMBER);
+        movie = (HashMap<String, ?>) getArguments().get(ARG_SECTION_NUMBER);
 
         TextView title = (TextView) rootView.findViewById(R.id.textViewMovieDetailTitle);
         TextView year = (TextView) rootView.findViewById(R.id.textViewMovieDetailYear);
