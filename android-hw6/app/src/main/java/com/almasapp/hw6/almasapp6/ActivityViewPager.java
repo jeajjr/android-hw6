@@ -1,34 +1,51 @@
 package com.almasapp.hw6.almasapp6;
 
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
-public class ActivityViewPager extends ActionBarActivity {
+public class ActivityViewPager extends ActionBarActivity implements FragmentRecyclerView.OnItemClickedListener {
+
+    private ArrayList<Map<String, ?>> movieList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_pager);
+
+        movieList = (new MovieData()).getMoviesList();
+
+        MyFragmentPagerAdapter myFragmentPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), movieList);
+
+        ViewPager mViewPager = (ViewPager) findViewById(R.id.view_pager);
+        mViewPager.setAdapter(myFragmentPagerAdapter);
+
+        mViewPager.setPageTransformer(false, new ViewPager.PageTransformer() {
+            @Override
+            public void transformPage(View page, float position) {
+                final float norm = Math.abs(Math.abs(position) - 1);
+                page.setAlpha(norm);
+
+                page.setScaleX(norm/2 + 0.5f);
+                page.setScaleY(norm/2 + 0.5f);
+            }
+        });
     }
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_activity_view_pager, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        return super.onOptionsItemSelected(item);
+    public void onItemClick(int position) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, FragmentMovieDetail.newInstance((HashMap<String,?>) movieList.get(position)))
+                .addToBackStack(null)
+                .commit();
     }
 }

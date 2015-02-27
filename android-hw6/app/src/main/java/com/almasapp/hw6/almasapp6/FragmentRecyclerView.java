@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -37,6 +38,8 @@ public class FragmentRecyclerView extends Fragment {
     private RecyclerView moviesRecyclerView;
 
     private OnItemClickedListener mListener;
+
+    private ActionBarCallBack actionBarCallBack;
 
     public interface OnItemClickedListener {
         public void onItemClick(int position);
@@ -148,8 +151,30 @@ public class FragmentRecyclerView extends Fragment {
 
                 myRecyclerViewAdapter.setOnMovieMenuClickListener(new MyRecyclerViewAdapter.OnMovieMenuClickListener() {
                     @Override
-                    public void onItemClick(View view, int position) {
+                    public void onItemClick(View view, final int position) {
                         Log.d(TAG, "movie menu clicked");
+
+                        PopupMenu popupMenu = new PopupMenu(getActivity(), view);
+                        MenuInflater inflater = popupMenu.getMenuInflater();
+                        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+                                switch (item.getItemId()) {
+                                    case R.id.item_delete:
+                                        movieList.remove(position);
+                                        myRecyclerViewAdapter.notifyItemRemoved(position);
+                                        break;
+
+                                    case R.id.item_duplicate:
+                                        movieList.add(position + 1, (HashMap) ((HashMap) movieList.get(position)).clone());
+                                        myRecyclerViewAdapter.notifyItemInserted(position + 1);
+                                        break;
+                                }
+                                return false;
+                            }
+                        });
+                        inflater.inflate(R.menu.contextual_or_popup_menu, popupMenu.getMenu());
+                        popupMenu.show();
                     }
                 });
 
@@ -166,7 +191,8 @@ public class FragmentRecyclerView extends Fragment {
                     public void onItemLongClick(View view, int position) {
                         Log.d(TAG, "list item long clicked");
 
-                        getActivity().startActionMode(new ActionBarCallBack(position));
+                        actionBarCallBack = new ActionBarCallBack(position);
+                        getActivity().startActionMode(actionBarCallBack);
                     }
                 });
                 break;
@@ -187,8 +213,16 @@ public class FragmentRecyclerView extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onDestroyView() {
+        if (actionBarCallBack != null)
+            actionBarCallBack.finish();
+        super.onDestroyView();
+    }
+
     public class ActionBarCallBack implements ActionMode.Callback {
         int position;
+        ActionMode mode;
 
         public ActionBarCallBack(int position) {
             this.position = position;
@@ -196,6 +230,7 @@ public class FragmentRecyclerView extends Fragment {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             mode.getMenuInflater().inflate(R.menu.contextual_or_popup_menu, menu);
+            this.mode = mode;
             return true;
         }
 
@@ -218,8 +253,8 @@ public class FragmentRecyclerView extends Fragment {
                     break;
 
                 case R.id.item_duplicate:
-                    movieList.add(position+1, (HashMap) ((HashMap) movieList.get(position)).clone());
-                    myRecyclerViewAdapter.notifyItemInserted(position+1);
+                    movieList.add(position + 1, (HashMap) ((HashMap) movieList.get(position)).clone());
+                    myRecyclerViewAdapter.notifyItemInserted(position + 1);
                     mode.finish();
                     break;
                 default:
@@ -228,6 +263,9 @@ public class FragmentRecyclerView extends Fragment {
             return false;
         }
 
+        public void finish() {
+            mode.finish();
+        }
         @Override
         public void onDestroyActionMode(ActionMode mode) {
 
