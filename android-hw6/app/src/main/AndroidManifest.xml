@@ -20,6 +20,10 @@
             android:name=".ActivityRecyclerView"
             android:label="@string/title_activity_activity_recycler_view" >
         </activity>
+        <activity
+            android:name=".ActivityViewPager"
+            android:label="@string/title_activity_activity_view_pager" >
+        </activity>
     </application>
 
 </manifest>

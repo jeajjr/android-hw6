@@ -67,6 +67,7 @@ public class ActivityFrontPage extends ActionBarActivity implements FragmentFron
                 startActivity(new Intent(this, ActivityRecyclerView.class));
                 break;
             case R.id.buttonFrontRecyclerView:
+                startActivity(new Intent(this, ActivityViewPager.class));
                 break;
 
         }
