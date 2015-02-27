@@ -7,9 +7,7 @@ import android.view.MenuItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
 
 public class ActivityRecyclerView extends ActionBarActivity implements FragmentRecyclerView.OnItemClickedListener {
     private ArrayList<Map<String, ?>> movieList;
@@ -26,6 +24,8 @@ public class ActivityRecyclerView extends ActionBarActivity implements FragmentR
                 .add(R.id.container, FragmentRecyclerView.newInstance(movieList))
                 .commit();
         }
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
     }
 
     @Override
@@ -43,8 +43,10 @@ public class ActivityRecyclerView extends ActionBarActivity implements FragmentR
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case android.R.id.home:
+                super.onBackPressed();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -56,5 +58,7 @@ public class ActivityRecyclerView extends ActionBarActivity implements FragmentR
                 .replace(R.id.container, FragmentMovieDetail.newInstance((HashMap<String,?>) movieList.get(position)))
                 .addToBackStack(null)
                 .commit();
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 }
