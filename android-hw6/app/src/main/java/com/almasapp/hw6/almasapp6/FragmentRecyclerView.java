@@ -179,6 +179,35 @@ public class FragmentRecyclerView extends Fragment {
             }
         });
 
+        myRecyclerViewAdapter.setOnMovieMenuClickListener(new MyRecyclerViewAdapter.OnMovieMenuClickListener() {
+            @Override
+            public void onItemClick(View view, final int position) {
+                Log.d(TAG, "movie menu clicked");
+
+                PopupMenu popupMenu = new PopupMenu(getActivity(), view);
+                MenuInflater inflater = popupMenu.getMenuInflater();
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.item_delete:
+                                movieList.remove(position);
+                                myRecyclerViewAdapter.notifyItemRemoved(position);
+                                break;
+
+                            case R.id.item_duplicate:
+                                movieList.add(position + 1, (HashMap) ((HashMap) movieList.get(position)).clone());
+                                myRecyclerViewAdapter.notifyItemInserted(position + 1);
+                                break;
+                        }
+                        return false;
+                    }
+                });
+                inflater.inflate(R.menu.contextual_or_popup_menu, popupMenu.getMenu());
+                popupMenu.show();
+            }
+        });
+
         moviesRecyclerView.setAdapter(myRecyclerViewAdapter);
 
         return rootView;
